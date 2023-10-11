@@ -10,6 +10,29 @@
 </head>
 
 <body class="container">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+
+                </ul>
+            </div>
+            <div>
+                <form action="{{ route('logout') }}" method="POST" class="d-flex" role="search">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
 
     <h1>All Books</h1>
 
@@ -50,10 +73,15 @@
         </form>
     </td>
     <td>
-        <form method="POST" action="{{ route('book.issue', $book) }}" style="display: inline;">
+        @if ($book->stock > 0)
+          <form method="POST" action="{{ route('book.issue', $book) }}" style="display: inline;">
             @csrf
             <button type="submit" class="btn btn-success">Issue</button>
-        </form>
+          </form>
+        @else
+          <button class="btn btn-secondary" disabled>Issue</button>
+          <div class="alert alert-warning mt-2">There are no available books.</div>
+        @endif
         <form method="POST" action="{{ route('book.return', $book) }}" style="display: inline;">
             @csrf
             <button type="submit" class="btn btn-primary">Return</button>
