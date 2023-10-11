@@ -42,4 +42,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function issuedBooks() {
+        return $this->hasMany(IssuedBook::class);
+    }
+
+    public function returnedBooks() {
+        return $this->hasMany(ReturnedBook::class);
+    }
+
 }

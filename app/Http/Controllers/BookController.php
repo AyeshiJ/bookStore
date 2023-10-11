@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\IssuedBook;
+use App\Models\ReturnedBook;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -81,20 +83,44 @@ class BookController extends Controller
                 return redirect()->route('book.index')->with('success', 'Book deleted successfully');
             }
             public function issue(Book $book) {
-                // Implement the book issuance logic here, e.g., record the user who issued the book
-                $book->stock -= 1;
-                $book->save();
+                // Get the currently authenticated user
+                $user = auth()->user();
 
-                // Redirect back to the book listing with a success message
-                return redirect()->route('book.index')->with('success', 'Book issued successfully');
+                // Check if the user is allowed to issue a book (e.g., stock should be greater than 0)
+                if ($book->stock > 0) {
+                    // Update the book's stock
+                    $book->stock -= 1;
+                    $book->save();
+
+                    // Create a new IssuedBook record and associate it with the user and book
+                    IssuedBook::create([
+                        'user_id' => $user->id,
+                        'book_id' => $book->id,
+                    ]);
+
+                    // Redirect back to the book listing with a success message
+                    return redirect()->route('book.index')->with('success', 'Book issued successfully');
+                } else {
+                    return redirect()->route('book.index')->with('error', 'There are no available books');
+                }
             }
 
             public function return(Book $book) {
-                // Implement the book return logic here, e.g., record the user who returned the book
+                // Get the currently authenticated user
+                $user = auth()->user();
+
+                // Update the book's stock
                 $book->stock += 1;
                 $book->save();
+
+                // Create a new ReturnedBook record and associate it with the user and book
+                ReturnedBook::create([
+                    'user_id' => $user->id,
+                    'book_id' => $book->id,
+                ]);
 
                 // Redirect back to the book listing with a success message
                 return redirect()->route('book.index')->with('success', 'Book returned successfully');
             }
+
 }

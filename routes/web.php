@@ -43,8 +43,9 @@ Route::get('/', function () {
             Route::put('/{book_id}', [BookController::class, 'update'])->name('book.update');
             Route::delete('/{book_id}', [BookController::class, 'destroy'])->name('book.destroy');
 
-            Route::post('/issue/{book}', [BookController::class, 'issue'])->name('book.issue');
-            Route::post('/return/{book}', [BookController::class, 'return'])->name('book.return');
+            Route::post('/issue/{book}', [BookController::class, 'issue'])->name('book.issue')->middleware('auth');
+            Route::post('/return/{book}', [BookController::class, 'return'])->name('book.return')->middleware('auth');
+
             });
 
 
